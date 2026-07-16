@@ -5,286 +5,346 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PAMPİŞUP — Yayın Cihazı</title>
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0E2A2B">
+<meta name="theme-color" content="#0b0f19">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#0E2A2B;
-    --paper:#F6F3EC;
-    --signal:#E4572E;
-    --calm:#2E7D6B;
-    --line:rgba(14,42,43,0.14);
-    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-    --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  :root {
+    --bg-color: #0b0f19;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --primary: #0066FF;
+    --primary-hover: #3385ff;
+    --danger: #FF3B30;
+    --danger-hover: #ff5c53;
+    --text-main: #FFFFFF;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --font-family: 'Inter', sans-serif;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
-  body{
-    background: var(--ink);
-    color: var(--paper);
-    font-family: var(--sans);
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    padding: 24px 18px 40px;
+  
+  * { box-sizing: border-box; }
+  
+  html, body {
+    margin: 0; padding: 0; height: 100%;
   }
-
-  .statusbar{
-    width:100%;
-    max-width:520px;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 16px;
-    border-radius:14px;
-    background: rgba(228,87,46,0.14);
-    border:1px solid rgba(228,87,46,0.5);
-    margin-bottom:18px;
-  }
-  .statusbar.off{
-    background: rgba(46,125,107,0.14);
-    border-color: rgba(46,125,107,0.5);
-  }
-  .dot{
-    width:12px;height:12px;border-radius:50%;
-    background: var(--signal);
-    flex-shrink:0;
-    animation: pulse 1.4s infinite;
-  }
-  .statusbar.off .dot{
-    background: var(--calm);
-    animation:none;
-  }
-  @keyframes pulse{
-    0%{box-shadow:0 0 0 0 rgba(228,87,46,0.6);}
-    70%{box-shadow:0 0 0 10px rgba(228,87,46,0);}
-    100%{box-shadow:0 0 0 0 rgba(228,87,46,0);}
-  }
-  .statusbar strong{
-    font-size:14px;
-    letter-spacing:0.02em;
-  }
-  .statusbar span{
-    font-family:var(--mono);
-    font-size:11px;
-    opacity:0.75;
-    margin-left:auto;
+  
+  body {
+    background: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-family);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    background-image: radial-gradient(circle at 50% -20%, rgba(0, 102, 255, 0.15) 0%, transparent 60%);
   }
 
-  header{
-    width:100%;max-width:520px;
-    margin-bottom:22px;
-  }
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    opacity:0.6;
-    margin:0 0 6px;
-  }
-  h1{
-    font-size:30px;
-    line-height:1.15;
-    margin:0 0 8px;
-    font-weight:700;
-    letter-spacing:-0.01em;
-  }
-  .owner{
-    font-family:var(--mono);
-    font-size:13px;
-    opacity:0.7;
+  header {
+    text-align: center;
+    margin-bottom: 30px;
   }
 
-  .stage{
-    width:100%;max-width:520px;
-    border-radius:20px;
-    overflow:hidden;
-    background:#04191A;
-    border:1px solid var(--line);
+  .logo {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 0 5px;
+    background: linear-gradient(135deg, #fff 0%, #a5c8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .glass-panel {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .video-container {
+    width: 100%;
     aspect-ratio: 4/3;
-    position:relative;
-    margin-bottom:18px;
-  }
-  video{
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-  }
-  .stage .placeholder{
-    position:absolute;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    color:rgba(246,243,236,0.4);
-    font-family:var(--mono);
-    font-size:13px;
-    text-align:center;
-    padding:20px;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--card-border);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
   }
 
-  .panel{
-    width:100%;max-width:520px;
-    background:rgba(246,243,236,0.05);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:18px;
-    margin-bottom:14px;
-  }
-  .row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:8px 0;
-    border-bottom:1px solid var(--line);
-    font-size:14px;
-  }
-  .row:last-child{border-bottom:none;}
-  .row .k{opacity:0.65;}
-  .row .v{font-family:var(--mono);font-size:13px;}
-  .id-box{
-    font-family:var(--mono);
-    font-size:20px;
-    letter-spacing:0.06em;
-    background:rgba(246,243,236,0.08);
-    padding:12px 14px;
-    border-radius:10px;
-    text-align:center;
-    word-break:break-all;
-    margin-top:8px;
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
 
-  .btn{
-    width:100%;max-width:520px;
-    padding:16px;
-    border-radius:14px;
-    border:none;
-    font-size:16px;
-    font-weight:600;
-    font-family:var(--sans);
-    cursor:pointer;
-    margin-bottom:10px;
-    transition:opacity .15s ease, transform .1s ease;
-  }
-  .btn:active{transform:scale(0.99);}
-  .btn.start{ background: var(--calm); color:#fff; }
-  .btn.stop{ background: var(--signal); color:#fff; }
-  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
-
-  .note{
-    max-width:520px;
-    font-size:12.5px;
-    line-height:1.5;
-    opacity:0.55;
-    text-align:center;
-    margin-top:8px;
+  video.active {
+    opacity: 1;
   }
 
-  footer{
-    margin-top:26px;
-    font-family:var(--mono);
-    font-size:11px;
-    opacity:0.4;
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    gap: 12px;
+    transition: opacity 0.3s;
+  }
+
+  .pulse-ring {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pulse-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  .live .pulse-dot {
+    background: var(--danger);
+    box-shadow: 0 0 10px var(--danger);
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+  }
+
+  .status-indicator.connected {
+    color: #34C759;
+  }
+
+  .status-indicator.connected::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #34C759;
+    box-shadow: 0 0 8px #34C759;
+  }
+
+  .status-indicator.waiting::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+    border: none;
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #fff;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-hover);
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+    display: none;
+  }
+
+  .btn-danger:hover {
+    background: var(--danger-hover);
+  }
+
+  .footer-note {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.5;
   }
 </style>
 </head>
 <body>
 
-  <div id="statusbar" class="statusbar off">
-    <div class="dot"></div>
-    <strong id="statusText">Yayın kapalı</strong>
-    <span id="statusTime">—</span>
-  </div>
-
   <header>
-    <p class="eyebrow">PAMPİŞUP · Yayın Cihazı</p>
-    <h1>Bu cihazın kamerası ve mikrofonu paylaşılabilir.</h1>
-    <p class="owner">Kurulum sahibi: <span id="ownerName">AD SOYAD BURAYA</span></p>
+    <h1 class="logo">PAMPİŞUP</h1>
+    <p class="subtitle">Yayın Cihazı</p>
   </header>
 
-  <div class="stage">
-    <video id="localVideo" autoplay playsinline muted></video>
-    <div class="placeholder" id="stagePlaceholder">Yayın başlatılmadı — kamera görüntüsü burada belirecek</div>
+  <div class="glass-panel">
+    
+    <div class="video-container" id="videoContainer">
+      <video id="localVideo" autoplay playsinline muted></video>
+      <div class="video-overlay" id="overlay">
+        <div class="pulse-ring"><div class="pulse-dot"></div></div>
+        <span id="overlayText">Kamera Kapalı</span>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <span>İzleyici Bağlantısı</span>
+      <div class="status-indicator waiting" id="viewerStatus">Bekleniyor</div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn">Kamerayı Paylaş</button>
+    <button class="btn btn-danger" id="stopBtn">Yayını Durdur</button>
+
   </div>
 
-  <div class="panel">
-    <div class="row"><span class="k">Bu cihazın kimliği</span></div>
-    <div class="id-box" id="peerIdBox">bağlanılıyor…</div>
-  </div>
-
-  <div class="panel">
-    <div class="row"><span class="k">Kamera</span><span class="v" id="camState">—</span></div>
-    <div class="row"><span class="k">Mikrofon</span><span class="v" id="micState">—</span></div>
-    <div class="row"><span class="k">İzleyen bağlantı</span><span class="v" id="viewerState">Yok</span></div>
-  </div>
-
-  <button class="btn start" id="startBtn">Yayını Başlat</button>
-  <button class="btn stop" id="stopBtn" style="display:none;">Yayını Durdur</button>
-
-  <p class="note">
-    Bu sayfa açık kaldığı sürece kamera ve mikrofon erişimi aktiftir.
-    Üstteki kırmızı gösterge yayının açık olduğunu belirtir. İstediğin an
-    "Yayını Durdur" düğmesine basarak erişimi tamamen kapatabilirsin.
-  </p>
-
-  <footer>PAMPİŞUP · kişisel kullanım · gizli çalışmaz</footer>
+  <p class="footer-note">Bu sayfa açık kaldığı sürece kamera paylaşıma hazır olur. İstediğiniz an durdurabilirsiniz.</p>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-  // ---- Kolayca özelleştir ----
-  document.getElementById('ownerName').textContent = "PAMPİŞUP"; // <- burayı kendi adınla değiştir
-
   const startBtn = document.getElementById('startBtn');
   const stopBtn = document.getElementById('stopBtn');
   const localVideo = document.getElementById('localVideo');
-  const placeholder = document.getElementById('stagePlaceholder');
-  const statusbar = document.getElementById('statusbar');
-  const statusText = document.getElementById('statusText');
-  const statusTime = document.getElementById('statusTime');
-  const peerIdBox = document.getElementById('peerIdBox');
-  const camState = document.getElementById('camState');
-  const micState = document.getElementById('micState');
-  const viewerState = document.getElementById('viewerState');
+  const overlay = document.getElementById('overlay');
+  const overlayText = document.getElementById('overlayText');
+  const videoContainer = document.getElementById('videoContainer');
+  const viewerStatus = document.getElementById('viewerStatus');
 
   let peer = null;
   let localStream = null;
-  let activeCall = null;
+  let activeDataConnections = [];
 
-  function setLive(isLive){
-    statusbar.classList.toggle('off', !isLive);
-    statusText.textContent = isLive ? "YAYIN AÇIK — kamera ve mikrofon paylaşılıyor" : "Yayın kapalı";
-    statusTime.textContent = isLive ? new Date().toLocaleTimeString('tr-TR') : "—";
-    startBtn.style.display = isLive ? 'none' : 'block';
-    stopBtn.style.display = isLive ? 'block' : 'none';
-    placeholder.style.display = isLive ? 'none' : 'flex';
+  function setLive(isLive) {
+    if(isLive) {
+      startBtn.style.display = 'none';
+      stopBtn.style.display = 'flex';
+      videoContainer.classList.add('live');
+      localVideo.classList.add('active');
+      overlay.style.opacity = '0';
+    } else {
+      startBtn.style.display = 'flex';
+      stopBtn.style.display = 'none';
+      videoContainer.classList.remove('live');
+      localVideo.classList.remove('active');
+      overlay.style.opacity = '1';
+      overlayText.textContent = 'Kamera Kapalı';
+      viewerStatus.className = 'status-indicator waiting';
+      viewerStatus.textContent = 'Bekleniyor';
+    }
   }
 
-  function initPeer(){
-    peer = new Peer('pampisup-cihaz'); // ücretsiz genel PeerJS bulut sunucusu, kendi sunucunu da yazabilirsin
-    peer.on('open', id => {
-      peerIdBox.textContent = id;
+  function initPeer() {
+    peer = new Peer('pampisup-cihaz'); 
+    
+    // İzleyici sinyal göndermek için data connection kuracak
+    peer.on('connection', conn => {
+      activeDataConnections.push(conn);
+      
+      conn.on('data', data => {
+        if(data.action === 'request_stream') {
+          // Yayın açıksa izleyiciye doğru call başlat
+          if(localStream) {
+            viewerStatus.className = 'status-indicator connected';
+            viewerStatus.textContent = 'Bağlandı';
+            peer.call(conn.peer, localStream);
+          } else {
+            conn.send({ error: 'Kamera henüz paylaşılmadı.' });
+          }
+        }
+      });
+
+      conn.on('close', () => {
+        activeDataConnections = activeDataConnections.filter(c => c !== conn);
+        if(activeDataConnections.length === 0) {
+          viewerStatus.className = 'status-indicator waiting';
+          viewerStatus.textContent = 'Bekleniyor';
+        }
+      });
     });
-    peer.on('call', call => {
-      if(!localStream) return; // yayın açık değilse kimseyi kabul etme
-      call.answer(localStream);
-      activeCall = call;
-      viewerState.textContent = "Bağlandı";
-      call.on('close', () => { viewerState.textContent = "Yok"; activeCall = null; });
-    });
+
     peer.on('error', err => {
-      peerIdBox.textContent = "bağlantı hatası: " + err.type;
+      console.error("Peer hatası:", err);
     });
   }
 
   startBtn.addEventListener('click', async () => {
-    try{
-      localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+    try {
+      overlayText.textContent = 'Kamera açılıyor...';
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       localVideo.srcObject = localStream;
-      camState.textContent = "Açık";
-      micState.textContent = "Açık";
       setLive(true);
+      
       if(!peer) initPeer();
-    }catch(err){
-      alert("Kamera/mikrofon erişimi verilmedi: " + err.message);
+      
+      // Halihazırda bağlı bekleyen izleyici varsa onlara yayını gönder
+      activeDataConnections.forEach(conn => {
+        viewerStatus.className = 'status-indicator connected';
+        viewerStatus.textContent = 'Bağlandı';
+        peer.call(conn.peer, localStream);
+      });
+
+    } catch(err) {
+      alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
+      overlayText.textContent = 'Kamera Kapalı';
     }
   });
 
@@ -293,15 +353,8 @@
       localStream.getTracks().forEach(t => t.stop());
       localStream = null;
     }
-    if(activeCall){ activeCall.close(); activeCall = null; }
-    localVideo.srcObject = null;
-    camState.textContent = "Kapalı";
-    micState.textContent = "Kapalı";
-    viewerState.textContent = "Yok";
     setLive(false);
   });
-
-  initPeer();
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
