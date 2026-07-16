@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ev Gözü — İzleyici</title>
+<title>PAMPİŞUP — İzleyici</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0E2A2B">
 <style>
@@ -79,8 +79,8 @@
 <body>
 
   <header>
-    <p class="eyebrow">Ev Gözü · İzleyici</p>
-    <h1>Cihaz kimliğini gir, bağlan.</h1>
+    <p class="eyebrow">PAMPİŞUP · İzleyici</p>
+    <h1>Yayın cihazına bağlan.</h1>
     <p class="sub">Karşı taraf "Yayını Başlat" demeden bağlantı kurulmaz.</p>
   </header>
 
@@ -89,10 +89,7 @@
     <span id="statusText">Bağlı değil</span>
   </div>
 
-  <div class="panel">
-    <label>Yayın cihazının kimliği</label>
-    <input type="text" id="peerIdInput" placeholder="ör. 8f2a-91c3-...">
-  </div>
+
 
   <button class="btn" id="connectBtn">Bağlan</button>
 
@@ -104,7 +101,6 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
   const connectBtn = document.getElementById('connectBtn');
-  const peerIdInput = document.getElementById('peerIdInput');
   const remoteVideo = document.getElementById('remoteVideo');
   const placeholder = document.getElementById('stagePlaceholder');
   const statusbar = document.getElementById('statusbar');
@@ -113,8 +109,7 @@
   let peer = new Peer();
 
   connectBtn.addEventListener('click', () => {
-    const targetId = peerIdInput.value.trim();
-    if(!targetId){ alert("Cihaz kimliğini gir."); return; }
+    const targetId = 'pampisup-cihaz';
 
     // İzleyicinin de kamera/mikrofonu gerekmiyor, boş stream ile arıyoruz
     const call = peer.call(targetId, new MediaStream());

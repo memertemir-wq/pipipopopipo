@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Ev Gözü — Yayın Cihazı</title>
+<title>PAMPİŞUP — Yayın Cihazı</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0E2A2B">
 <style>
@@ -196,7 +196,7 @@
   </div>
 
   <header>
-    <p class="eyebrow">Ev Gözü · Yayın Cihazı</p>
+    <p class="eyebrow">PAMPİŞUP · Yayın Cihazı</p>
     <h1>Bu cihazın kamerası ve mikrofonu paylaşılabilir.</h1>
     <p class="owner">Kurulum sahibi: <span id="ownerName">AD SOYAD BURAYA</span></p>
   </header>
@@ -226,12 +226,12 @@
     "Yayını Durdur" düğmesine basarak erişimi tamamen kapatabilirsin.
   </p>
 
-  <footer>ev-gozu · kişisel kullanım · gizli çalışmaz</footer>
+  <footer>PAMPİŞUP · kişisel kullanım · gizli çalışmaz</footer>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
   // ---- Kolayca özelleştir ----
-  document.getElementById('ownerName').textContent = "AD SOYAD BURAYA"; // <- burayı kendi adınla değiştir
+  document.getElementById('ownerName').textContent = "PAMPİŞUP"; // <- burayı kendi adınla değiştir
 
   const startBtn = document.getElementById('startBtn');
   const stopBtn = document.getElementById('stopBtn');
@@ -259,7 +259,7 @@
   }
 
   function initPeer(){
-    peer = new Peer(); // ücretsiz genel PeerJS bulut sunucusu, kendi sunucunu da yazabilirsin
+    peer = new Peer('pampisup-cihaz'); // ücretsiz genel PeerJS bulut sunucusu, kendi sunucunu da yazabilirsin
     peer.on('open', id => {
       peerIdBox.textContent = id;
     });

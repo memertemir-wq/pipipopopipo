@@ -1,6 +1,6 @@
 {
-  "name": "Ev Gözü - Yayın Cihazı",
-  "short_name": "Ev Gözü",
+  "name": "PAMPİŞUP - Yayın Cihazı",
+  "short_name": "PAMPİŞUP",
   "description": "Görünür durumlu, rıza temelli ev kamera/mikrofon yayın uygulaması.",
   "start_url": "./index.html",
   "display": "standalone",
