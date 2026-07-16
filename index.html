@@ -91,16 +91,7 @@
   }
 
   video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-
-  video.active {
-    opacity: 1;
+    display: none;
   }
 
   .video-overlay {
@@ -113,7 +104,6 @@
     color: var(--text-muted);
     font-size: 14px;
     gap: 12px;
-    transition: opacity 0.3s;
   }
 
   .pulse-ring {
@@ -220,6 +210,33 @@
     background: var(--danger-hover);
   }
 
+  .btn-secondary {
+    background: #1f2937;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: none;
+  }
+
+  .btn-secondary:hover {
+    background: #374151;
+  }
+
+  body.dimmed #blackOverlay {
+    display: flex !important;
+  }
+
+  #blackOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000000;
+    z-index: 9999;
+    color: rgba(255, 255, 255, 0.15);
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    user-select: none;
+  }
+
   .footer-note {
     margin-top: 24px;
     font-size: 12px;
@@ -232,6 +249,10 @@
 </head>
 <body>
 
+  <div id="blackOverlay">
+    Uyandırmak için ekrana çift dokunun
+  </div>
+
   <header>
     <h1 class="logo">PAMPİŞUP</h1>
     <p class="subtitle">Yayın Cihazı</p>
@@ -240,10 +261,9 @@
   <div class="glass-panel">
     
     <div class="video-container" id="videoContainer">
-      <video id="localVideo" autoplay playsinline muted></video>
       <div class="video-overlay" id="overlay">
         <div class="pulse-ring"><div class="pulse-dot"></div></div>
-        <span id="overlayText">Kamera Kapalı</span>
+        <span id="overlayText">Yayın Kapalı</span>
       </div>
     </div>
 
@@ -253,7 +273,7 @@
     </div>
 
     <button class="btn btn-primary" id="startBtn">Kamerayı Paylaş</button>
-    <button class="btn btn-danger" id="stopBtn">Yayını Durdur</button>
+    <button class="btn btn-secondary" id="dimBtn">Ekranı Karart (Pil Tasarrufu)</button>
 
   </div>
 
@@ -262,9 +282,7 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
   const startBtn = document.getElementById('startBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const localVideo = document.getElementById('localVideo');
-  const overlay = document.getElementById('overlay');
+  const dimBtn = document.getElementById('dimBtn');
   const overlayText = document.getElementById('overlayText');
   const videoContainer = document.getElementById('videoContainer');
   const viewerStatus = document.getElementById('viewerStatus');
@@ -272,24 +290,52 @@
   let peer = null;
   let localStream = null;
   let activeDataConnections = [];
+  let wakeLock = null;
+
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.error('WakeLock hatası:', err);
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (wakeLock !== null && document.visibilityState === 'visible' && localStream) {
+      requestWakeLock();
+    }
+  });
 
   function setLive(isLive) {
     if(isLive) {
       startBtn.style.display = 'none';
-      stopBtn.style.display = 'flex';
+      dimBtn.style.display = 'flex';
       videoContainer.classList.add('live');
-      localVideo.classList.add('active');
-      overlay.style.opacity = '0';
+      overlayText.textContent = 'Yayın Aktif (Gizli Mod)';
+      overlayText.style.color = '#34C759';
     } else {
       startBtn.style.display = 'flex';
-      stopBtn.style.display = 'none';
+      dimBtn.style.display = 'none';
       videoContainer.classList.remove('live');
-      localVideo.classList.remove('active');
-      overlay.style.opacity = '1';
-      overlayText.textContent = 'Kamera Kapalı';
+      overlayText.textContent = 'Yayın Kapalı';
+      overlayText.style.color = 'var(--text-muted)';
       viewerStatus.className = 'status-indicator waiting';
       viewerStatus.textContent = 'Bekleniyor';
     }
+  }
+
+  function stopBroadcast() {
+    if(localStream){
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
+    if (wakeLock !== null) {
+      wakeLock.release().then(() => wakeLock = null);
+    }
+    document.body.classList.remove('dimmed');
+    setLive(false);
   }
 
   function initPeer() {
@@ -309,6 +355,8 @@
           } else {
             conn.send({ error: 'Kamera henüz paylaşılmadı.' });
           }
+        } else if (data.action === 'stop_stream') {
+          stopBroadcast();
         }
       });
 
@@ -330,8 +378,8 @@
     try {
       overlayText.textContent = 'Kamera açılıyor...';
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localVideo.srcObject = localStream;
       setLive(true);
+      requestWakeLock();
       
       if(!peer) initPeer();
       
@@ -344,16 +392,18 @@
 
     } catch(err) {
       alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
-      overlayText.textContent = 'Kamera Kapalı';
+      overlayText.textContent = 'Yayın Kapalı';
     }
   });
 
-  stopBtn.addEventListener('click', () => {
-    if(localStream){
-      localStream.getTracks().forEach(t => t.stop());
-      localStream = null;
-    }
-    setLive(false);
+
+
+  dimBtn.addEventListener('click', () => {
+    document.body.classList.add('dimmed');
+  });
+
+  blackOverlay.addEventListener('dblclick', () => {
+    document.body.classList.remove('dimmed');
   });
 
   if ('serviceWorker' in navigator) {

@@ -147,6 +147,17 @@
     cursor: not-allowed;
   }
 
+  .btn-danger {
+    background: #FF3B30;
+    box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+    margin-top: 10px;
+    display: none;
+  }
+
+  .btn-danger:hover {
+    background: #ff5c53;
+  }
+
   .footer-note {
     margin-top: 24px;
     font-size: 12px;
@@ -174,6 +185,7 @@
     </div>
 
     <button class="btn" id="connectBtn">Canlı Yayına Bağlan</button>
+    <button class="btn btn-danger" id="remoteStopBtn">Karşı Cihazın Yayınını Kapat</button>
 
   </div>
 
@@ -182,6 +194,7 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
   const connectBtn = document.getElementById('connectBtn');
+  const remoteStopBtn = document.getElementById('remoteStopBtn');
   const remoteVideo = document.getElementById('remoteVideo');
   const overlay = document.getElementById('overlay');
   const overlayText = document.getElementById('overlayText');
@@ -202,7 +215,8 @@
         remoteVideo.classList.add('active');
         overlay.style.opacity = '0';
         connectBtn.textContent = 'Canlı Yayın İzleniyor';
-        connectBtn.disabled = true;
+        connectBtn.style.display = 'none';
+        remoteStopBtn.style.display = 'flex';
       }).catch(err => {
         console.error("Video oynatılamadı:", err);
         overlayText.textContent = "Oynatmak için ekrana dokunun";
@@ -224,8 +238,17 @@
       overlay.style.opacity = '1';
       overlayText.textContent = "Bağlantı kesildi.";
       connectBtn.textContent = 'Tekrar Bağlan';
+      connectBtn.style.display = 'flex';
       connectBtn.disabled = false;
+      remoteStopBtn.style.display = 'none';
     });
+  });
+
+  remoteStopBtn.addEventListener('click', () => {
+    if(dataConnection) {
+      dataConnection.send({ action: 'stop_stream' });
+      overlayText.textContent = 'Yayın durduruldu.';
+    }
   });
 
   connectBtn.addEventListener('click', () => {
@@ -261,7 +284,9 @@
       overlay.style.opacity = '1';
       overlayText.textContent = "Bağlantı koptu.";
       connectBtn.disabled = false;
+      connectBtn.style.display = 'flex';
       connectBtn.textContent = 'Tekrar Bağlan';
+      remoteStopBtn.style.display = 'none';
     });
   });
 </script>
