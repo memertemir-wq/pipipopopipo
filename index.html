@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ev Gözü — Yayın Cihazı</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E2A2B">
+<style>
+  :root{
+    --ink:#0E2A2B;
+    --paper:#F6F3EC;
+    --signal:#E4572E;
+    --calm:#2E7D6B;
+    --line:rgba(14,42,43,0.14);
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--sans);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding: 24px 18px 40px;
+  }
+
+  .statusbar{
+    width:100%;
+    max-width:520px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 16px;
+    border-radius:14px;
+    background: rgba(228,87,46,0.14);
+    border:1px solid rgba(228,87,46,0.5);
+    margin-bottom:18px;
+  }
+  .statusbar.off{
+    background: rgba(46,125,107,0.14);
+    border-color: rgba(46,125,107,0.5);
+  }
+  .dot{
+    width:12px;height:12px;border-radius:50%;
+    background: var(--signal);
+    flex-shrink:0;
+    animation: pulse 1.4s infinite;
+  }
+  .statusbar.off .dot{
+    background: var(--calm);
+    animation:none;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(228,87,46,0.6);}
+    70%{box-shadow:0 0 0 10px rgba(228,87,46,0);}
+    100%{box-shadow:0 0 0 0 rgba(228,87,46,0);}
+  }
+  .statusbar strong{
+    font-size:14px;
+    letter-spacing:0.02em;
+  }
+  .statusbar span{
+    font-family:var(--mono);
+    font-size:11px;
+    opacity:0.75;
+    margin-left:auto;
+  }
+
+  header{
+    width:100%;max-width:520px;
+    margin-bottom:22px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    opacity:0.6;
+    margin:0 0 6px;
+  }
+  h1{
+    font-size:30px;
+    line-height:1.15;
+    margin:0 0 8px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .owner{
+    font-family:var(--mono);
+    font-size:13px;
+    opacity:0.7;
+  }
+
+  .stage{
+    width:100%;max-width:520px;
+    border-radius:20px;
+    overflow:hidden;
+    background:#04191A;
+    border:1px solid var(--line);
+    aspect-ratio: 4/3;
+    position:relative;
+    margin-bottom:18px;
+  }
+  video{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .stage .placeholder{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    color:rgba(246,243,236,0.4);
+    font-family:var(--mono);
+    font-size:13px;
+    text-align:center;
+    padding:20px;
+  }
+
+  .panel{
+    width:100%;max-width:520px;
+    background:rgba(246,243,236,0.05);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:14px;
+  }
+  .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .row:last-child{border-bottom:none;}
+  .row .k{opacity:0.65;}
+  .row .v{font-family:var(--mono);font-size:13px;}
+  .id-box{
+    font-family:var(--mono);
+    font-size:20px;
+    letter-spacing:0.06em;
+    background:rgba(246,243,236,0.08);
+    padding:12px 14px;
+    border-radius:10px;
+    text-align:center;
+    word-break:break-all;
+    margin-top:8px;
+  }
+
+  .btn{
+    width:100%;max-width:520px;
+    padding:16px;
+    border-radius:14px;
+    border:none;
+    font-size:16px;
+    font-weight:600;
+    font-family:var(--sans);
+    cursor:pointer;
+    margin-bottom:10px;
+    transition:opacity .15s ease, transform .1s ease;
+  }
+  .btn:active{transform:scale(0.99);}
+  .btn.start{ background: var(--calm); color:#fff; }
+  .btn.stop{ background: var(--signal); color:#fff; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .note{
+    max-width:520px;
+    font-size:12.5px;
+    line-height:1.5;
+    opacity:0.55;
+    text-align:center;
+    margin-top:8px;
+  }
+
+  footer{
+    margin-top:26px;
+    font-family:var(--mono);
+    font-size:11px;
+    opacity:0.4;
+  }
+</style>
+</head>
+<body>
+
+  <div id="statusbar" class="statusbar off">
+    <div class="dot"></div>
+    <strong id="statusText">Yayın kapalı</strong>
+    <span id="statusTime">—</span>
+  </div>
+
+  <header>
+    <p class="eyebrow">Ev Gözü · Yayın Cihazı</p>
+    <h1>Bu cihazın kamerası ve mikrofonu paylaşılabilir.</h1>
+    <p class="owner">Kurulum sahibi: <span id="ownerName">AD SOYAD BURAYA</span></p>
+  </header>
+
+  <div class="stage">
+    <video id="localVideo" autoplay playsinline muted></video>
+    <div class="placeholder" id="stagePlaceholder">Yayın başlatılmadı — kamera görüntüsü burada belirecek</div>
+  </div>
+
+  <div class="panel">
+    <div class="row"><span class="k">Bu cihazın kimliği</span></div>
+    <div class="id-box" id="peerIdBox">bağlanılıyor…</div>
+  </div>
+
+  <div class="panel">
+    <div class="row"><span class="k">Kamera</span><span class="v" id="camState">—</span></div>
+    <div class="row"><span class="k">Mikrofon</span><span class="v" id="micState">—</span></div>
+    <div class="row"><span class="k">İzleyen bağlantı</span><span class="v" id="viewerState">Yok</span></div>
+  </div>
+
+  <button class="btn start" id="startBtn">Yayını Başlat</button>
+  <button class="btn stop" id="stopBtn" style="display:none;">Yayını Durdur</button>
+
+  <p class="note">
+    Bu sayfa açık kaldığı sürece kamera ve mikrofon erişimi aktiftir.
+    Üstteki kırmızı gösterge yayının açık olduğunu belirtir. İstediğin an
+    "Yayını Durdur" düğmesine basarak erişimi tamamen kapatabilirsin.
+  </p>
+
+  <footer>ev-gozu · kişisel kullanım · gizli çalışmaz</footer>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+  // ---- Kolayca özelleştir ----
+  document.getElementById('ownerName').textContent = "AD SOYAD BURAYA"; // <- burayı kendi adınla değiştir
+
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const localVideo = document.getElementById('localVideo');
+  const placeholder = document.getElementById('stagePlaceholder');
+  const statusbar = document.getElementById('statusbar');
+  const statusText = document.getElementById('statusText');
+  const statusTime = document.getElementById('statusTime');
+  const peerIdBox = document.getElementById('peerIdBox');
+  const camState = document.getElementById('camState');
+  const micState = document.getElementById('micState');
+  const viewerState = document.getElementById('viewerState');
+
+  let peer = null;
+  let localStream = null;
+  let activeCall = null;
+
+  function setLive(isLive){
+    statusbar.classList.toggle('off', !isLive);
+    statusText.textContent = isLive ? "YAYIN AÇIK — kamera ve mikrofon paylaşılıyor" : "Yayın kapalı";
+    statusTime.textContent = isLive ? new Date().toLocaleTimeString('tr-TR') : "—";
+    startBtn.style.display = isLive ? 'none' : 'block';
+    stopBtn.style.display = isLive ? 'block' : 'none';
+    placeholder.style.display = isLive ? 'none' : 'flex';
+  }
+
+  function initPeer(){
+    peer = new Peer(); // ücretsiz genel PeerJS bulut sunucusu, kendi sunucunu da yazabilirsin
+    peer.on('open', id => {
+      peerIdBox.textContent = id;
+    });
+    peer.on('call', call => {
+      if(!localStream) return; // yayın açık değilse kimseyi kabul etme
+      call.answer(localStream);
+      activeCall = call;
+      viewerState.textContent = "Bağlandı";
+      call.on('close', () => { viewerState.textContent = "Yok"; activeCall = null; });
+    });
+    peer.on('error', err => {
+      peerIdBox.textContent = "bağlantı hatası: " + err.type;
+    });
+  }
+
+  startBtn.addEventListener('click', async () => {
+    try{
+      localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+      localVideo.srcObject = localStream;
+      camState.textContent = "Açık";
+      micState.textContent = "Açık";
+      setLive(true);
+      if(!peer) initPeer();
+    }catch(err){
+      alert("Kamera/mikrofon erişimi verilmedi: " + err.message);
+    }
+  });
+
+  stopBtn.addEventListener('click', () => {
+    if(localStream){
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
+    if(activeCall){ activeCall.close(); activeCall = null; }
+    localVideo.srcObject = null;
+    camState.textContent = "Kapalı";
+    micState.textContent = "Kapalı";
+    viewerState.textContent = "Yok";
+    setLive(false);
+  });
+
+  initPeer();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+</script>
+</body>
+</html>

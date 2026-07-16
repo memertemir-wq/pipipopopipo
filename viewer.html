@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ev Gözü — İzleyici</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E2A2B">
+<style>
+  :root{
+    --ink:#0E2A2B;
+    --paper:#F6F3EC;
+    --signal:#E4572E;
+    --calm:#2E7D6B;
+    --line:rgba(14,42,43,0.14);
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:24px 18px 40px;
+  }
+  header{width:100%;max-width:520px;margin-bottom:20px;}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;opacity:0.6;margin:0 0 6px;
+  }
+  h1{font-size:26px;margin:0 0 6px;font-weight:700;letter-spacing:-0.01em;}
+  p.sub{opacity:0.6;font-size:14px;margin:0;}
+
+  .panel{
+    width:100%;max-width:520px;
+    background:rgba(246,243,236,0.05);
+    border:1px solid var(--line);
+    border-radius:16px;padding:18px;margin-bottom:14px;
+  }
+  label{font-family:var(--mono);font-size:12px;opacity:0.6;display:block;margin-bottom:8px;}
+  input[type=text]{
+    width:100%;padding:12px 14px;border-radius:10px;
+    border:1px solid var(--line);
+    background:rgba(246,243,236,0.08);
+    color:var(--paper);font-family:var(--mono);font-size:15px;
+  }
+  .btn{
+    width:100%;max-width:520px;padding:16px;border-radius:14px;border:none;
+    font-size:16px;font-weight:600;cursor:pointer;margin-top:12px;margin-bottom:10px;
+    background:var(--calm);color:#fff;
+  }
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .stage{
+    width:100%;max-width:520px;border-radius:20px;overflow:hidden;
+    background:#04191A;border:1px solid var(--line);
+    aspect-ratio:4/3;position:relative;margin-bottom:14px;
+  }
+  video{width:100%;height:100%;object-fit:cover;display:block;}
+  .placeholder{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:rgba(246,243,236,0.4);font-family:var(--mono);font-size:13px;text-align:center;padding:20px;
+  }
+
+  .statusbar{
+    width:100%;max-width:520px;display:flex;align-items:center;gap:10px;
+    padding:12px 16px;border-radius:14px;
+    background:rgba(46,125,107,0.14);border:1px solid rgba(46,125,107,0.5);
+    margin-bottom:18px;font-size:14px;
+  }
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--calm);flex-shrink:0;}
+  .statusbar.live{background:rgba(228,87,46,0.14);border-color:rgba(228,87,46,0.5);}
+  .statusbar.live .dot{background:var(--signal);}
+</style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">Ev Gözü · İzleyici</p>
+    <h1>Cihaz kimliğini gir, bağlan.</h1>
+    <p class="sub">Karşı taraf "Yayını Başlat" demeden bağlantı kurulmaz.</p>
+  </header>
+
+  <div class="statusbar" id="statusbar">
+    <div class="dot"></div>
+    <span id="statusText">Bağlı değil</span>
+  </div>
+
+  <div class="panel">
+    <label>Yayın cihazının kimliği</label>
+    <input type="text" id="peerIdInput" placeholder="ör. 8f2a-91c3-...">
+  </div>
+
+  <button class="btn" id="connectBtn">Bağlan</button>
+
+  <div class="stage">
+    <video id="remoteVideo" autoplay playsinline></video>
+    <div class="placeholder" id="stagePlaceholder">Görüntü burada belirecek</div>
+  </div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+  const connectBtn = document.getElementById('connectBtn');
+  const peerIdInput = document.getElementById('peerIdInput');
+  const remoteVideo = document.getElementById('remoteVideo');
+  const placeholder = document.getElementById('stagePlaceholder');
+  const statusbar = document.getElementById('statusbar');
+  const statusText = document.getElementById('statusText');
+
+  let peer = new Peer();
+
+  connectBtn.addEventListener('click', () => {
+    const targetId = peerIdInput.value.trim();
+    if(!targetId){ alert("Cihaz kimliğini gir."); return; }
+
+    // İzleyicinin de kamera/mikrofonu gerekmiyor, boş stream ile arıyoruz
+    const call = peer.call(targetId, new MediaStream());
+    call.on('stream', remoteStream => {
+      remoteVideo.srcObject = remoteStream;
+      placeholder.style.display = 'none';
+      statusbar.classList.add('live');
+      statusText.textContent = "Canlı bağlantı aktif";
+    });
+    call.on('close', () => {
+      statusbar.classList.remove('live');
+      statusText.textContent = "Bağlantı kapandı";
+      placeholder.style.display = 'flex';
+    });
+    call.on('error', err => {
+      statusText.textContent = "Hata: " + err;
+    });
+  });
+</script>
+</body>
+</html>
